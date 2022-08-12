@@ -7,7 +7,7 @@ class ServiceProviders{
     public $email;
     public $phone;
     public $photo;
-    public $password;
+    public $hash;
     public $bank_account_no;
     public $bank_account_name;
     public $bank;
@@ -22,8 +22,8 @@ class ServiceProviders{
 			 $address[]= $row["address"];
 			 $email[]= $row["email"];
 			 $phone[]= $row["phone"];
-			 $phone[]= $row["photo"];
-			 $password[]= $row["password"];
+			 $photo[]= $row["photo"];
+			 $hash[]= $row["password"];
 			 $bank_account_no[]= $row["bank_account_no"];
 			 $bank_account_name[]= $row["bank_account_name"];
 			 $bank[]= $row["bank"];
@@ -35,7 +35,7 @@ class ServiceProviders{
         $this->email = $email[0];
         $this->phone = $phone[0];
         $this->photo = $photo[0];
-        $this->password = $password[0];
+        $this->hash = $hash[0];
         $this->bank_account_no = $bank_account_no[0];
         $this->bank_account_name = $bank_account_name[0];
         $this->bank = $bank[0];
