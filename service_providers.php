@@ -11,7 +11,6 @@ class ServiceProviders{
     public $bank_account_no;
     public $bank_account_name;
     public $bank;
-    public $date;
   
     
     function __construct($provider_id, $conn) {
@@ -28,7 +27,6 @@ class ServiceProviders{
 			 $bank_account_no[]= $row["bank_account_no"];
 			 $bank_account_name[]= $row["bank_account_name"];
 			 $bank[]= $row["bank"];
-			 $date[]= $row["date"];
 			
          }
         if(!empty($company_name)){
@@ -41,7 +39,6 @@ class ServiceProviders{
         $this->bank_account_no = $bank_account_no[0];
         $this->bank_account_name = $bank_account_name[0];
         $this->bank = $bank[0];
-        $this->date = $date[0];
         
         }
     }

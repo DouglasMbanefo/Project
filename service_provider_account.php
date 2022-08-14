@@ -6,13 +6,7 @@ include 'orders_mechanical.php';
 include 'orders_rental.php';
 include 'mechanical_services.php';
 include 'rental_services.php';
-include 'users.php';
 
-
-if(isset($_GET["logout"])){
-    logout();
-    header("location: login.php");
-}
 
 if(isset($_COOKIE["provider_id"])){
 $provider = new ServiceProviders($_COOKIE["provider_id"], $conn);
@@ -22,26 +16,6 @@ $provider_hash = $_COOKIE["provider_hash"];
     }
 }else{
 	header("location:login.php");
-}
-
-if(isset($_POST["hide_rental_service"])){
-    $service_id = sanitizePost($_POST["hide_rental_service"]);
-   hide_rental_service($service_id, $_COOKIE["provider_id"]);
-}
-
-if(isset($_POST["show_rental_service"])){
-    $service_id = sanitizePost($_POST["show_rental_service"]);
-   show_rental_service($service_id, $_COOKIE["provider_id"]);
-}
-
-if(isset($_POST["show_mech_service"])){
-    $service_id = sanitizePost($_POST["show_mech_service"]);
-   show_mechanical_service($service_id, $_COOKIE["provider_id"]);
-}
-
-if(isset($_POST["hide_mech_service"])){
-    $service_id = sanitizePost($_POST["hide_mech_service"]);
-   hide_mechanical_service($service_id, $_COOKIE["provider_id"]);
 }
 
 $query = "SELECT * FROM orders_mechanical WHERE service_provider=".$_COOKIE["provider_id"];
@@ -56,18 +30,6 @@ $query1 = "SELECT * FROM rental_orders WHERE service_provider=".$_COOKIE["provid
 		$order_rental[] = $row1['order_id'];	 
          }
 
-$query2 = "SELECT * FROM mechanical_services WHERE service_provider=".$_COOKIE["provider_id"];
-		$result2 = mysqli_query($conn, $query2);
-		 while($row2 = mysqli_fetch_assoc($result2)){
-		$mech_services[] = $row2['id'];	 
-         }
-
-$query3 = "SELECT * FROM rental_services WHERE service_provider=".$_COOKIE["provider_id"];
-		$result3 = mysqli_query($conn, $query3);
-		 while($row3 = mysqli_fetch_assoc($result3)){
-		$rental_services[] = $row3['id'];	 
-         }
-
 ?>
 
 <!DOCTYPE html>
@@ -77,7 +39,7 @@ $query3 = "SELECT * FROM rental_services WHERE service_provider=".$_COOKIE["prov
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
-<title>Mechailer - My Account</title>
+<title>Clasifico - HTML 5 Template Preview</title>
 
 <!-- Fav Icon -->
 <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
@@ -156,25 +118,22 @@ $query3 = "SELECT * FROM rental_services WHERE service_provider=".$_COOKIE["prov
                 <div class="inner-container">
                     <div class="col-sm-12"><h3>Hi, <?php echo $provider->company_name; ?></h3></div><br>
                  <div class="tab">
-  <button class="tablinks active" onclick="openCity(event, 'myorders')" id="myorders_btn">Orders</button>
+  <button class="tablinks active" onclick="openCity(event, 'myorders')" id="myorders_btn">My Orders</button>
   <button class="tablinks" onclick="openCity(event, 'profile')">Profile</button>
-  <button class="tablinks" onclick="openCity(event, 'car_rentals')">Car Rentals Orders</button>
-  <button class="tablinks" onclick="openCity(event, 'mech_services')">Mechanical Services</button>
-  <button class="tablinks" onclick="openCity(event, 'rental_services')">Car Rental Services</button>
+  <button class="tablinks" onclick="openCity(event, 'car_rentals')">Car Rentals</button>
 
 </div>
 
 <div id="myorders" class="tabcontent">
   
     <div class="table-responsive">
-  <table class="table table-striped">
+  <table class="table table-stripped">
     <thead>
         <tr>
         <th>S/N</th>
         <th>Order Id</th>
+        <th>Service Provider</th>
         <th>Service</th>
-        <th>User</th>
-        <th>User Phone</th>
         <th>Cost</th>
         <th>Date</th>
         </tr>
@@ -185,15 +144,14 @@ $query3 = "SELECT * FROM rental_services WHERE service_provider=".$_COOKIE["prov
               $sn=1;
               for($i=0; $i<count($order_mech); $i++){
                   $mech = new Orders_mechanical($order_mech[$i], $conn);
-                  $user = new User($mech->user, $conn);
+                  $provider = new ServiceProviders($mech->service_provider, $conn);
                   $service = new MechanicalServices($mech->mechanical_service, $conn);
           ?>
           <tr>
           <td><?php echo $sn; ?></td>
           <td><?php echo $mech->order_id; ?></td>
+          <td><?php echo $provider->company_name; ?></td>
           <td><?php echo $service->title; ?></td>
-          <td><?php echo $user->first_name." ".$user->last_name; ?></td>
-          <td><?php echo $user->phone; ?></td>
           <td><?php echo number_format($mech->cost,2); ?></td>
           <td><?php echo $mech->date; ?></td>
           </tr>
@@ -214,34 +172,28 @@ $query3 = "SELECT * FROM rental_services WHERE service_provider=".$_COOKIE["prov
 </div>
 
 <div id="profile" class="tabcontent">
-    <div class="row">
-    <div class="lower-content col-sm-2">
+    <div class="lower-content">
                                        
- <img src="assets/images/<?php if($provider->photo!=""){echo $provider->photo;}else{ echo "news/admin-1.png"; } ?>" alt="" style="width: 180px; height:180px; border-radius:15px;"><br>
-        
-         <a href="service_provider_edit_profile.php" class="btn btn-warning mt-2 mb-2 btn-sm"><i class="fa fa-edit"></i> Edit Profile</a>
-    <a href="?logout" class="btn btn-danger mt-2 mb-2 btn-sm"><i class="fa fa-power-off"></i> Logout</a>
+ <img src="assets/images/<?php if($provider->photo!=""){echo $provider->photo;}else{ echo "news/admin-1.png"; } ?>" alt="" style="width: 80px; height:80px; border-radius:15px;">
     </div>
-   
-    <div class="col-sm-10 table-responsive">
+    <br>
   <table class="table table-striped">
       <tbody>
           <tr>
-              <td style="width: 150px;">Company Name:</td><td> <?php echo $provider->company_name; ?></td><td>Bank:</td><td><?php echo $provider->bank; ?></td></tr><tr>
-              <td>Email: </td><td><?php echo $provider->email; ?></td><td>Bank Account Number:</td><td><?php echo $provider->bank_account_no; ?></td></tr><tr>
-              <td>Phone: </td><td><?php echo $provider->phone; ?></td><td>Bank Account Name:</td><td><?php echo $provider->bank_account_name; ?></td></tr><tr>
+              <td style="width: 150px;">Company Name:</td><td> <?php echo $provider->company_name; ?></td></tr><tr>
+              <td>Email: </td><td><?php echo $provider->email; ?></td></tr><tr>
+              <td>Phone: </td><td><?php echo $provider->phone; ?></td></tr><tr>
           <td>Address:</td><td> <?php echo $provider->address; ?></td></tr>
       </tbody> 
     </table>
-   
-</div>
-</div>
+    <a href="" class="btn btn-danger"><i class="fa fa-edit"></i> Edit Profile</a>
+    <a href="" class="btn btn-warning"><i class="fa fa-power-off"></i> Logout</a>
 </div>
                     
 <div id="car_rentals" class="tabcontent">
   
     <div class="table-responsive">
-  <table class="table table-striped">
+  <table class="table table-stripped">
     <thead>
         <tr>
         <th>S/N</th>
@@ -268,7 +220,7 @@ $query3 = "SELECT * FROM rental_services WHERE service_provider=".$_COOKIE["prov
               $sn=1;
               for($i=0; $i<count($order_rental); $i++){
                   $rental = new Orders_rental($order_rental[$i], $conn);
-                  $user = new User($rental->user, $conn);
+                  $user = new Users($rental->user, $conn);
                   $service = new RentalServices($rental->rental_service, $conn);
           ?>
           <tr>
@@ -304,152 +256,6 @@ $query3 = "SELECT * FROM rental_services WHERE service_provider=".$_COOKIE["prov
     </table>
     </div>
 </div>
-                    
-<div id="rental_services" class="tabcontent">
-  
-    <div class="table-responsive">
-  <table class="table table-striped">
-    <thead>
-        <tr>
-        <th>S/N</th>
-        <th>Car name</th>
-        <th>Car type</th>
-        <th>No. of seats</th>
-        <th>Mileage per rental</th>
-        <th>No. of luggage</th>
-        <th>A/C</th>
-        <th>Price per day</th>
-        <th>City</th>
-        <th>Country</th>
-        <th>Date</th>
-        <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-          <?php
-          if(!empty($rental_services)){
-              $sn=1;
-              for($i=0; $i<count($rental_services); $i++){
-                  $service = new RentalServices($rental_services[$i], $conn);
-          ?>
-          <tr>
-          <td><?php echo $sn; ?></td>
-          <td><?php echo $service->car_name; ?></td>
-          <td><?php echo $service->car_type; ?></td>
-          <td><?php echo $service->seats; ?></td>
-          <td><?php echo $service->mileage; ?></td>
-          <td><?php echo $service->luggage; ?></td>
-          <td><?php echo $service->a_c; ?></td>
-          <td><?php echo number_format($service->price_per_day,2); ?></td>
-          <td><?php echo $service->city; ?></td>
-          <td><?php echo $service->country; ?></td>
-          <td><?php echo $service->date; ?></td>
-              <td><form method="post" action="edit_car_rental.php">
-                  <input type="hidden" name="service_id" value="<?php echo $rental_services[$i]; ?>" >
-                <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit</button>
-                </form>
-              
-                  <?php 
-                  if($service->available==1){
-                    ?>
-                  <form method="post">
-                  <input type="hidden" name="hide_rental_service" value="<?php echo $rental_services[$i]; ?>" >
-                <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-eye-slash"></i> Hide</button>
-                </form>
-                  <?php
-                  }else{
-                      ?>
-                   <form method="post">
-                  <input type="hidden" name="show_rental_service" value="<?php echo $rental_services[$i]; ?>" >
-                <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-eye"></i> Show</button>
-                </form>
-                  <?php
-                  }
-                  ?>
-              </td>
-          </tr>
-          <?php
-                  $sn +=1;
-              }
-          }else{
-              ?>
-          <tr>
-          <td colspan="12">No Rental Service</td>
-          </tr>
-          <?php
-          }
-              ?>
-      </tbody>
-    </table>
-    </div>
-</div>
-
-<div id="mech_services" class="tabcontent">
-  
-    <div class="table-responsive">
-  <table class="table table-striped">
-    <thead>
-        <tr>
-        <th>S/N</th>
-        <th>Title</th>
-        <th>Location</th>
-        <th>Description</th>
-        <th>Cost</th>
-        <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-          <?php
-          if(!empty($mech_services)){
-              $sn=1;
-              for($i=0; $i<count($mech_services); $i++){
-                  $service = new MechanicalServices($mech_services[$i], $conn);
-          ?>
-          <tr>
-          <td><?php echo $sn; ?></td>
-          <td><?php echo $service->title; ?></td>
-          <td><?php echo $service->location; ?></td>
-          <td><?php echo $service->description; ?></td>
-          <td><?php echo number_format($service->cost,2); ?></td>
-            <td><form method="post" action="edit_mechanical_service.php">
-                  <input type="hidden" name="service_id" value="<?php echo $mech_services[$i]; ?>" >
-                <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit</button>
-                </form>
-                
-                <?php
-                  if($service->active==1){
-                      ?>
-                <form method="post" >
-                  <input type="hidden" name="hide_mech_service" value="<?php echo $mech_services[$i]; ?>" >
-                <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-eye-slash"></i> Hide</button>
-                </form>
-                <?php
-                  }else{
-                      ?>
-                <form method="post" >
-                  <input type="hidden" name="show_mech_service" value="<?php echo $mech_services[$i]; ?>" >
-                <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-eye"></i> Show</button>
-                </form>
-                <?php
-                  }
-                  ?>
-                </td>
-          </tr>
-          <?php
-                  $sn +=1;
-              }
-          }else{
-              ?>
-          <tr>
-          <td colspan="6">No Mechanical Service</td>
-          </tr>
-          <?php
-          }
-              ?>
-      </tbody>
-    </table>
-    </div>
-</div>
 
                 </div>
             </div>
@@ -458,7 +264,107 @@ $query3 = "SELECT * FROM rental_services WHERE service_provider=".$_COOKIE["prov
 
 
         <!-- main-footer -->
-        <?php include 'footer.php'; ?>
+        <footer class="main-footer">
+            <div class="footer-top" style="background-image: url(assets/images/background/footer-1.jpg);">
+                <div class="auto-container">
+                    <div class="widget-section">
+                        <div class="row clearfix">
+                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
+                                <div class="footer-widget logo-widget">
+                                    <figure class="footer-logo"><a href="index.html"><img src="assets/images/footer-logo.png" alt=""></a></figure>
+                                    <div class="text">
+                                        <p>Lorem ipsum dolor amet consetetur adi pisicing elit sed eiusm tempor in cididunt ut labore dolore magna aliqua enim ad minim venitam</p>
+                                    </div>
+                                    <ul class="social-links clearfix">
+                                        <li><a href="index.html"><i class="fab fa-facebook-f"></i></a></li>
+                                        <li><a href="index.html"><i class="fab fa-twitter"></i></a></li>
+                                        <li><a href="index.html"><i class="fab fa-instagram"></i></a></li>
+                                        <li><a href="index.html"><i class="fab fa-google-plus-g"></i></a></li>
+                                        <li><a href="index.html"><i class="fab fa-linkedin-in"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
+                                <div class="footer-widget links-widget ml-70">
+                                    <div class="widget-title">
+                                        <h3>Services</h3>
+                                    </div>
+                                    <div class="widget-content">
+                                        <ul class="links-list clearfix">
+                                            <li><a href="index.html">About Us</a></li>
+                                            <li><a href="index.html">Listing</a></li>
+                                            <li><a href="index.html">How It Works</a></li>
+                                            <li><a href="index.html">Our Services</a></li>
+                                            <li><a href="index.html">Our Blog</a></li>
+                                            <li><a href="index.html">Contact Us</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
+                                <div class="footer-widget post-widget">
+                                    <div class="widget-title">
+                                        <h3>Top News</h3>
+                                    </div>
+                                    <div class="post-inner">
+                                        <div class="post">
+                                            <figure class="post-thumb">
+                                                <img src="assets/images/resource/footer-post-1.jpg" alt="">
+                                                <a href="blog-details.html"><i class="fas fa-link"></i></a>
+                                            </figure>
+                                            <h5><a href="blog-details.html">The Added Value Social Worker</a></h5>
+                                            <p>Mar 25, 2020</p>
+                                        </div>
+                                        <div class="post">
+                                            <figure class="post-thumb">
+                                                <img src="assets/images/resource/footer-post-2.jpg" alt="">
+                                                <a href="blog-details.html"><i class="fas fa-link"></i></a>
+                                            </figure>
+                                            <h5><a href="blog-details.html">Ways to Increase Trust</a></h5>
+                                            <p>Mar 24, 2020</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
+                                <div class="footer-widget contact-widget">
+                                    <div class="widget-title">
+                                        <h3>Contacts</h3>
+                                    </div>
+                                    <div class="widget-content">
+                                        <ul class="info-list clearfix">
+                                            <li>
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                Flat 20, Reynolds Neck, North Helenaville, FV77 8WS
+                                            </li>
+                                            <li>
+                                                <i class="fas fa-microphone"></i>
+                                                <a href="tel:23055873407">+2(305) 587-3407</a>
+                                            </li>
+                                            <li>
+                                                <i class="fas fa-envelope"></i>
+                                                <a href="mailto:info@example.com">info@example.com</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="auto-container">
+                    <div class="footer-inner clearfix">
+                        <div class="copyright pull-left"><p><a href="index.html">Clasifico</a> &copy; 2020 All Right Reserved</p></div>
+                        <ul class="footer-nav pull-right clearfix">
+                            <li><a href="index.html">Terms of Service</a></li>
+                            <li><a href="index.html">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
         <!-- main-footer end -->
 
 
