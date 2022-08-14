@@ -23,6 +23,7 @@ class RentalServices{
 		 while($row = mysqli_fetch_assoc($result)){
 			 $car_name[]= $row["car_name"];
 			 $car_type[]= $row["car_type"];
+			 $seats[]= $row["seats"];
 			 $mileage[]= $row["mileage"];
 			 $luggage[]= $row["luggage"];
 			 $a_c[]= $row["a_c"];
@@ -37,6 +38,7 @@ class RentalServices{
         if(!empty($car_name)){
         $this->car_name = $car_name[0];
         $this->car_type = $car_type[0];
+        $this->seats = $seats[0];
         $this->mileage = $mileage[0];
         $this->luggage = $luggage[0];
         $this->a_c = $a_c[0];

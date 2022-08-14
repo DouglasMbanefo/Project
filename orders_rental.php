@@ -23,9 +23,9 @@ class Orders_rental{
     public $card_cvc;
     public $date;
     
-    function __construct($order_id, $conn) {
+    function __construct($order_id2, $conn) {
         
-        $query = "SELECT * FROM rental_orders WHERE order_id='".$order_id."'";
+        $query = "SELECT * FROM rental_orders WHERE order_id='".$order_id2."'";
 		$result = mysqli_query($conn, $query);
 		 while($row = mysqli_fetch_assoc($result)){
 			 $order_id[]= $row["order_id"];

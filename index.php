@@ -1,3 +1,23 @@
+<?php
+include 'connect.php';
+include 'functions.php';
+include 'service_providers.php';
+include 'mechanical_services.php';
+include 'rental_services.php';
+
+$query2 = "SELECT * FROM mechanical_services WHERE active=1";
+		$result2 = mysqli_query($conn, $query2);
+		 while($row2 = mysqli_fetch_assoc($result2)){
+		$mech_services[] = $row2['id'];	 
+         }
+
+$query3 = "SELECT * FROM rental_services WHERE available=1";
+		$result3 = mysqli_query($conn, $query3);
+		 while($row3 = mysqli_fetch_assoc($result3)){
+		$rental_services[] = $row3['id'];	 
+         }
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +25,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
-<title>Clasifico - HTML 5 Template Preview</title>
+<title>Mechailer</title>
 
 <!-- Fav Icon -->
 <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
@@ -52,31 +72,24 @@
                         <div class="inner-box">
                             <div class="pattern-layer" style="background-image: url(assets/images/shape/shape-12.png);"></div>
                             <h3>Find a Service</h3>
-                            <form action="index-3.html" method="post">
+                            <form action="search_results.php" >
                                 <div class="form-group">
                                     <i class="icon-2"></i>
-                                    <input type="search" name="search-field" placeholder="Search Keyword..." required="">
+                                    <input type="search" name="keyword" placeholder="Search Keyword..." required="">
                                 </div>
-                                <div class="form-group">
-                                    <i class="icon-10"></i>
-                                    <select class="wide">
-                                       <option data-display="Select Service">Select Service</option>
-                                       <option value="1">California</option>
-                                       <option value="2">New York</option>
-                                       <option value="3">Sun Francis</option>
-                                       <option value="4">Shicago</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <i class="icon-3"></i>
-                                    <select class="wide">
-                                       <option data-display="Select Location">Select Location</option>
-                                       <option value="1">California</option>
-                                       <option value="2">New York</option>
-                                       <option value="3">Sun Francis</option>
-                                       <option value="4">Shicago</option>
-                                    </select>
-                                </div>
+                               <div class="form-group">
+                                            <i class="icon-3"></i>
+                                            <input type="search" name="location" placeholder="Enter Location" required="">
+                                        </div>
+                                        <div class="form-group">
+                                            <i class="icon-4"></i>
+                                            <select class="wide" name="service" required>
+                                               <option data-display="Select Service">Select Service</option>
+                                               <option value="Mechanical">Mechanical</option>
+                                               <option value="Car Rental">Car Rental</option>
+                                               
+                                            </select>
+                                        </div>
                                
                                 <div class="form-group">
                                     <button type="submit" class="theme-btn-one"><i class="icon-2"></i>Search</button>
@@ -163,274 +176,123 @@
                     <div class="tabs-content">
                         <div class="tab active-tab" id="tab-1">
                             <div class="row clearfix">
+                                  <?php
+          if(!empty($rental_services)){
+              for($i=0; $i<count($rental_services); $i++){
+                  $service = new RentalServices($rental_services[$i], $conn);
+                  switch($service->car_type){
+                      case "Small":
+                          $car_image ="assets/images/cars/smallcar.jpg";
+                          break;
+                    case "Medium":
+                          $car_image ="assets/images/cars/mediumcar.jpg";
+                          break;
+                    case "Large":
+                          $car_image ="assets/images/cars/largecar.jpg";
+                          break;
+                    case "Minivan":
+                          $car_image ="assets/images/cars/minivan.jpg";
+                          break;
+                    case "Premium":
+                          $car_image ="assets/images/cars/premiumcar.jpg";
+                          break;
+                    case "SUV":
+                          $car_image ="assets/images/cars/suv.jpg";
+                          break;
+                          
+                      default:
+                        $car_image = "assets/images/resource/feature-15.jpg";
+                    
+                      
+                  }
+          ?>
                                 <div class="col-lg-6 col-md-12 col-sm-12 feature-block">
                                     <div class="feature-block-one wow fadeInLeft animated animated" data-wow-delay="00ms" data-wow-duration="1500ms">
                                         <div class="inner-box">
                                             <div class="image-box">
-                                                <figure class="image"><img src="assets/images/resource/feature-15.jpg" alt=""></figure>
+                                                <figure class="image mt-5"><img src="<?php echo $car_image; ?>" alt="" style="max-width:200px;"></figure>
                                                 <div class="feature-2">Featured</div>
                                             </div>
                                             <div class="lower-content">
                                                 <div class="category"><i class="fas fa-tags"></i><p>Car Rental</p></div>
-                                                <h4><a href="browse-ads-details.html">Toyota Corolla</a></h4>
+                                                <h4><a href="car_rental_details.php?s=<?php echo $rental_services[$i]; ?>"><?php echo $service->car_name; ?></a></h4>
                                                 <ul class="rating clearfix">
+                                                    <?php 
+                                                $get_rating = average_review($rental_services[$i], "Rental");
+                  $rating = explode("-",$get_rating);
+                                                    for($i2=0; $i2<$rating[0]; $i2++){
+                                                        ?>
                                                     <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><a href="index.html">(32)</a></li>
+                                                    <?php } ?>
+                                                    <li><a href="car_rental_details.php?s=<?php echo $rental_services[$i]; ?>">(<?php echo $rating[1]; ?>)</a></li>
                                                 </ul>
                                                 <ul class="info clearfix">
-                                                    <li><i class="far fa-clock"></i>1 months ago</li>
-                                                    <li><i class="fas fa-map-marker-alt"></i>G87P, Birmingham, UK</li>
+                                                    <li><i class="far fa-clock"></i><?php echo $service->date; ?></li>
+                                                    <li><i class="fas fa-map-marker-alt"></i><?php echo $service->city.", ".$service->country; ?></li>
                                                 </ul>
                                                 <div class="lower-box">
-                                                    <h5><span>Start From:</span> $3,000.00</h5>
+                                                    <h5><span>Price per day:</span> $<?php echo $service->price_per_day; ?></h5>
                                                     <ul class="react-box">
-                                                        <li><a href="index.html"><i class="icon-21"></i></a></li>
-                                                        <li><a href="index.html"><i class="icon-22"></i></a></li>
+                                                        <li><a href="car_rental_details.php?s=<?php echo $rental_services[$i]; ?>"><i class="icon-20"></i></a></li>
+                                                        
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-12 col-sm-12 feature-block">
-                                    <div class="feature-block-one wow fadeInRight animated animated" data-wow-delay="200ms" data-wow-duration="1500ms">
-                                        <div class="inner-box">
-                                            <div class="image-box">
-                                                <figure class="image"><img src="assets/images/resource/feature-16.jpg" alt=""></figure>
-                                                <div class="feature-2">Featured</div>
-                                            </div>
-                                            <div class="lower-content">
-                                                <div class="category"><i class="fas fa-tags"></i><p>Car Rental</p></div>
-                                                <h4><a href="browse-ads-details.html">Mercedes</a></h4>
-                                                <ul class="rating clearfix">
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><a href="index.html">(25)</a></li>
-                                                </ul>
-                                                <ul class="info clearfix">
-                                                    <li><i class="far fa-clock"></i>2 months ago</li>
-                                                    <li><i class="fas fa-map-marker-alt"></i>G87P, Birmingham, UK</li>
-                                                </ul>
-                                                <div class="lower-box">
-                                                    <h5><span>Start From:</span> $2,000.00</h5>
-                                                    <ul class="react-box">
-                                                        <li><a href="index.html"><i class="icon-21"></i></a></li>
-                                                        <li><a href="index.html"><i class="icon-22"></i></a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-12 col-sm-12 feature-block">
-                                    <div class="feature-block-one wow fadeInLeft animated animated" data-wow-delay="200ms" data-wow-duration="1500ms">
-                                        <div class="inner-box">
-                                            <div class="image-box">
-                                                <figure class="image"><img src="assets/images/resource/feature-17.jpg" alt=""></figure>
-                                                <div class="feature-2">Featured</div>
-                                            </div>
-                                            <div class="lower-content">
-                                                <div class="category"><i class="fas fa-tags"></i><p>Car Rental</p></div>
-                                                <h4><a href="browse-ads-details.html">SUV</a></h4>
-                                                <ul class="rating clearfix">
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><a href="index.html">(32)</a></li>
-                                                </ul>
-                                                <ul class="info clearfix">
-                                                    <li><i class="far fa-clock"></i>6 months ago</li>
-                                                    <li><i class="fas fa-map-marker-alt"></i>G87P, Birmingham, UK</li>
-                                                </ul>
-                                                <div class="lower-box">
-                                                    <h5><span>Start From:</span> $3,200.00</h5>
-                                                    <ul class="react-box">
-                                                        <li><a href="index.html"><i class="icon-21"></i></a></li>
-                                                        <li><a href="index.html"><i class="icon-22"></i></a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-12 col-sm-12 feature-block">
-                                    <div class="feature-block-one wow fadeInRight animated animated" data-wow-delay="400ms" data-wow-duration="1500ms">
-                                        <div class="inner-box">
-                                            <div class="image-box">
-                                                <figure class="image"><img src="assets/images/resource/feature-18.jpg" alt=""></figure>
-                                                <div class="feature-2">Featured</div>
-                                            </div>
-                                            <div class="lower-content">
-                                                <div class="category"><i class="fas fa-tags"></i><p>Car Rental</p></div>
-                                                <h4><a href="browse-ads-details.html">Sedan</a></h4>
-                                                <ul class="rating clearfix">
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><a href="index.html">(32)</a></li>
-                                                </ul>
-                                                <ul class="info clearfix">
-                                                    <li><i class="far fa-clock"></i>7 months ago</li>
-                                                    <li><i class="fas fa-map-marker-alt"></i>G87P, Birmingham, UK</li>
-                                                </ul>
-                                                <div class="lower-box">
-                                                    <h5><span>Start From:</span> $3,500.00</h5>
-                                                    <ul class="react-box">
-                                                        <li><a href="index.html"><i class="icon-21"></i></a></li>
-                                                        <li><a href="index.html"><i class="icon-22"></i></a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                 <?php
+              }
+          }
+              ?>   
                             </div>
                         </div>
                         <div class="tab" id="tab-2">
                             <div class="row clearfix">
+                                 <?php
+          if(!empty($mech_services)){
+              for($i=0; $i<count($mech_services); $i++){
+                  $service = new MechanicalServices($mech_services[$i], $conn);
+          ?>
                                 <div class="col-lg-6 col-md-12 col-sm-12 feature-block">
                                     <div class="feature-block-one">
                                         <div class="inner-box">
-                                            <div class="image-box">
-                                                <figure class="image"><img src="assets/images/resource/feature-15.jpg" alt=""></figure>
+                                            <div class="image-box" >
+                                                <figure class="image mt-5" ><img src="assets/images/cars/estatecar.jpg" alt="" style="max-width:200px;"></figure>
                                                 <div class="feature-2">Featured</div>
                                             </div>
                                             <div class="lower-content">
                                                 <div class="category"><i class="fas fa-tags"></i><p>Mechanic</p></div>
-                                                <h4><a href="browse-ads-details.html">Villa on Grand Avenue</a></h4>
+                                                <h4><a href="service_details.php?s=<?php echo $mech_services[$i]; ?>"><?php echo $service->title; ?></a></h4>
                                                 <ul class="rating clearfix">
+                                                  <?php 
+                                                $get_rating = average_review($mech_services[$i], "Mechanical");
+                  $rating = explode("-",$get_rating);
+                                                    for($i2=0; $i2<$rating[0]; $i2++){
+                                                        ?>
                                                     <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><a href="index.html">(32)</a></li>
+                                                    <?php } ?>
+                                                    <li><a href="service_details.php?s=<?php echo $mech_services[$i]; ?>">(<?php echo $rating[1]; ?>)</a></li>
                                                 </ul>
                                                 <ul class="info clearfix">
-                                                    <li><i class="far fa-clock"></i>1 months ago</li>
-                                                    <li><i class="fas fa-map-marker-alt"></i>G87P, Birmingham, UK</li>
+                                                   
+                                                    <li><i class="fas fa-map-marker-alt"></i><?php echo $service->location; ?></li>
                                                 </ul>
                                                 <div class="lower-box">
-                                                    <h5><span>Start From:</span> $3,000.00</h5>
+                                                    <h5><span>Cost:</span> $<?php echo $service->cost; ?></h5>
                                                     <ul class="react-box">
-                                                        <li><a href="index.html"><i class="icon-21"></i></a></li>
-                                                        <li><a href="index.html"><i class="icon-22"></i></a></li>
+                                                       
+                                                        <li><a href="service_details.php?s=<?php echo $mech_services[$i]; ?>"><i class="icon-20"></i></a></li>
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-12 col-sm-12 feature-block">
-                                    <div class="feature-block-one">
-                                        <div class="inner-box">
-                                            <div class="image-box">
-                                                <figure class="image"><img src="assets/images/resource/feature-16.jpg" alt=""></figure>
-                                                <div class="feature-2">Featured</div>
-                                            </div>
-                                            <div class="lower-content">
-                                                <div class="category"><i class="fas fa-tags"></i><p>Mechanic</p></div>
-                                                <h4><a href="browse-ads-details.html">Villa on Grand Avenue</a></h4>
-                                                <ul class="rating clearfix">
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><a href="index.html">(25)</a></li>
-                                                </ul>
-                                                <ul class="info clearfix">
-                                                    <li><i class="far fa-clock"></i>2 months ago</li>
-                                                    <li><i class="fas fa-map-marker-alt"></i>G87P, Birmingham, UK</li>
-                                                </ul>
-                                                <div class="lower-box">
-                                                    <h5><span>Start From:</span> $2,000.00</h5>
-                                                    <ul class="react-box">
-                                                        <li><a href="index.html"><i class="icon-21"></i></a></li>
-                                                        <li><a href="index.html"><i class="icon-22"></i></a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-12 col-sm-12 feature-block">
-                                    <div class="feature-block-one">
-                                        <div class="inner-box">
-                                            <div class="image-box">
-                                                <figure class="image"><img src="assets/images/resource/feature-17.jpg" alt=""></figure>
-                                                <div class="feature-2">Featured</div>
-                                            </div>
-                                            <div class="lower-content">
-                                                <div class="category"><i class="fas fa-tags"></i><p>Mechanic</p></div>
-                                                <h4><a href="browse-ads-details.html">Villa on Grand Avenue</a></h4>
-                                                <ul class="rating clearfix">
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><a href="index.html">(40)</a></li>
-                                                </ul>
-                                                <ul class="info clearfix">
-                                                    <li><i class="far fa-clock"></i>3 months ago</li>
-                                                    <li><i class="fas fa-map-marker-alt"></i>G87P, Birmingham, UK</li>
-                                                </ul>
-                                                <div class="lower-box">
-                                                    <h5><span>Start From:</span> $3,500.00</h5>
-                                                    <ul class="react-box">
-                                                        <li><a href="index.html"><i class="icon-21"></i></a></li>
-                                                        <li><a href="index.html"><i class="icon-22"></i></a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 col-md-12 col-sm-12 feature-block">
-                                    <div class="feature-block-one">
-                                        <div class="inner-box">
-                                            <div class="image-box">
-                                                <figure class="image"><img src="assets/images/resource/feature-18.jpg" alt=""></figure>
-                                                <div class="feature-2">Featured</div>
-                                            </div>
-                                            <div class="lower-content">
-                                                <div class="category"><i class="fas fa-tags"></i><p>Mechanic</p></div>
-                                                <h4><a href="browse-ads-details.html">Villa on Grand Avenue</a></h4>
-                                                <ul class="rating clearfix">
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><i class="icon-17"></i></li>
-                                                    <li><a href="index.html">(28)</a></li>
-                                                </ul>
-                                                <ul class="info clearfix">
-                                                    <li><i class="far fa-clock"></i>4 months ago</li>
-                                                    <li><i class="fas fa-map-marker-alt"></i>G87P, Birmingham, UK</li>
-                                                </ul>
-                                                <div class="lower-box">
-                                                    <h5><span>Start From:</span> $3,000.00</h5>
-                                                    <ul class="react-box">
-                                                        <li><a href="index.html"><i class="icon-21"></i></a></li>
-                                                        <li><a href="index.html"><i class="icon-22"></i></a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                           <?php
+              }
+          }
+                  ?>
                             </div>
                         </div>
                     </div>
@@ -468,107 +330,7 @@
 
 
         <!-- main-footer -->
-        <footer class="main-footer">
-            <div class="footer-top" style="background-image: url(assets/images/background/footer-1.jpg);">
-                <div class="auto-container">
-                    <div class="widget-section">
-                        <div class="row clearfix">
-                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
-                                <div class="footer-widget logo-widget">
-                                    <figure class="footer-logo"><a href="index.html"><img src="assets/images/footer-logo.png" alt=""></a></figure>
-                                    <div class="text">
-                                        <p>Lorem ipsum dolor amet consetetur adi pisicing elit sed eiusm tempor in cididunt ut labore dolore magna aliqua enim ad minim venitam</p>
-                                    </div>
-                                    <ul class="social-links clearfix">
-                                        <li><a href="index.html"><i class="fab fa-facebook-f"></i></a></li>
-                                        <li><a href="index.html"><i class="fab fa-twitter"></i></a></li>
-                                        <li><a href="index.html"><i class="fab fa-instagram"></i></a></li>
-                                        <li><a href="index.html"><i class="fab fa-google-plus-g"></i></a></li>
-                                        <li><a href="index.html"><i class="fab fa-linkedin-in"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
-                                <div class="footer-widget links-widget ml-70">
-                                    <div class="widget-title">
-                                        <h3>Services</h3>
-                                    </div>
-                                    <div class="widget-content">
-                                        <ul class="links-list clearfix">
-                                            <li><a href="index.html">About Us</a></li>
-                                            <li><a href="index.html">Listing</a></li>
-                                            <li><a href="index.html">How It Works</a></li>
-                                            <li><a href="index.html">Our Services</a></li>
-                                            <li><a href="index.html">Our Blog</a></li>
-                                            <li><a href="index.html">Contact Us</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
-                                <div class="footer-widget post-widget">
-                                    <div class="widget-title">
-                                        <h3>Top News</h3>
-                                    </div>
-                                    <div class="post-inner">
-                                        <div class="post">
-                                            <figure class="post-thumb">
-                                                <img src="assets/images/resource/footer-post-1.jpg" alt="">
-                                                <a href="blog-details.html"><i class="fas fa-link"></i></a>
-                                            </figure>
-                                            <h5><a href="blog-details.html">The Added Value Social Worker</a></h5>
-                                            <p>Mar 25, 2020</p>
-                                        </div>
-                                        <div class="post">
-                                            <figure class="post-thumb">
-                                                <img src="assets/images/resource/footer-post-2.jpg" alt="">
-                                                <a href="blog-details.html"><i class="fas fa-link"></i></a>
-                                            </figure>
-                                            <h5><a href="blog-details.html">Ways to Increase Trust</a></h5>
-                                            <p>Mar 24, 2020</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
-                                <div class="footer-widget contact-widget">
-                                    <div class="widget-title">
-                                        <h3>Contacts</h3>
-                                    </div>
-                                    <div class="widget-content">
-                                        <ul class="info-list clearfix">
-                                            <li>
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                Flat 20, Reynolds Neck, North Helenaville, FV77 8WS
-                                            </li>
-                                            <li>
-                                                <i class="fas fa-microphone"></i>
-                                                <a href="tel:23055873407">+2(305) 587-3407</a>
-                                            </li>
-                                            <li>
-                                                <i class="fas fa-envelope"></i>
-                                                <a href="mailto:info@example.com">info@example.com</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <div class="auto-container">
-                    <div class="footer-inner clearfix">
-                        <div class="copyright pull-left"><p><a href="index.html">Clasifico</a> &copy; 2020 All Right Reserved</p></div>
-                        <ul class="footer-nav pull-right clearfix">
-                            <li><a href="index.html">Terms of Service</a></li>
-                            <li><a href="index.html">Privacy Policy</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </footer>
+      <?php include 'footer.php'; ?>
         <!-- main-footer end -->
 
 

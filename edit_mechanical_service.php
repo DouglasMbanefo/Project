@@ -1,20 +1,37 @@
 <?php
 include "connect.php";
 include "functions.php";
+include 'service_providers.php';
+include 'mechanical_services.php';
 
-if(isset($_POST["company_name"])){
-    $company_name =sanitizePost($_POST['company_name']);
-    $email =sanitizePost($_POST['email']);
-    $phone =sanitizePost($_POST['phone']);
-    $address =sanitizePost($_POST['address']);
-    $password = hashPassword($_POST['password']);
-     
-    if(check_user($email)=="" && check_service_provider($email)==""){
-    service_provider_registration($company_name, $address, $email, $phone, $password);
-        header("location: register_confirm.php");
-    }else{
-        $resp = "User already exists!";
+
+if(isset($_COOKIE["provider_id"])){
+$provider = new ServiceProviders($_COOKIE["provider_id"], $conn);
+$provider_hash = $_COOKIE["provider_hash"];
+    if($provider_hash != $provider->hash){
+        header("location:login.php");
     }
+}else{
+	header("location:login.php");
+}
+
+if(isset($_POST["service_id"])){
+    $service_id = sanitizePost($_POST['service_id']);
+     $service = new MechanicalServices($service_id, $conn);
+}
+
+if(isset($_POST["mech_id"])){
+   
+    $service_id = sanitizePost($_POST['mech_id']);
+    $service_provider = $_COOKIE["provider_id"];
+    $location = sanitizePost($_POST['location']);
+    $title = sanitizePost($_POST['title']);
+    $description = sanitizePost($_POST['description']);
+    $cost = sanitizePost($_POST['cost']);
+     
+   edit_mechanical_service($service_id, $service_provider, $location, $title, $description, $cost);
+    header("location: service_provider_account.php");
+    
 }
 ?>
 <!DOCTYPE html>
@@ -24,7 +41,7 @@ if(isset($_POST["company_name"])){
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
-<title>Mechailer - Service Provider Registration</title>
+<title>Mechailer - Edit Mechanical Service</title>
 
 <!-- Fav Icon -->
 <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
@@ -61,11 +78,11 @@ if(isset($_POST["company_name"])){
             <div class="auto-container">
                 <div class="content-box centred mr-0">
                     <div class="title">
-                        <h1>Create an Account</h1>
+                        <h1>Edit Mechanical Service</h1>
                     </div>
                     <ul class="bread-crumb clearfix">
                         <li><a href="index.php">Home</a></li>
-                        <li>Service Provider Registration</li>
+                        <li>Edit Mechanical Service</li>
                     </ul>
                 </div>
             </div>
@@ -76,43 +93,41 @@ if(isset($_POST["company_name"])){
         <!-- login-section -->
         <section class="login-section bg-color-2">
             <div class="auto-container">
-                <div class="inner-container">
-                    <div class="inner-box">
-                        <h2>Registration</h2>
+                <div class="inner-container" style="max-width:80%">
+                    <div class=" ">
+                        <h2>Edit Mechanical Service</h2>
+                        <br>
                         <form  method="post" class="login-form">
-                             <?php
-                if(isset($resp)){ ?>
-                <div class="alert alert-danger">
-                <?php echo $resp; ?> </div>
-                <?php  } ?>
+                            <input type="hidden" name="mech_id" value="<?php echo $service_id; ?>" >
+                            <div class="row">
+                            <div class="col-sm-6">
                             <div class="form-group">
-                                <label>Company Name</label>
-                                <input type="text" name="company_name" required="">
-                            </div> 
+                                <label>Title</label>
+                                <input type="text" class="form-control" name="title" required="" placeholder="Enter a title for this service" value="<?php echo $service->title; ?>">
+                            </div>
                             
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" name="email" required="">
+                                <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" class="form-control" name="location" required="" placeholder="Enter a location" value="<?php echo $service->location; ?>">
                             </div>
                             <div class="form-group">
-                                <label>Password</label>
-                                <input type="password" name="password" required="">
+                                <label>Cost</label>
+                                <input type="number" class="form-control" step=".01" name="cost" required="" placeholder="Cost of this service" value="<?php echo $service->cost; ?>">
                             </div>
-                            <div class="form-group">
-                                <label>Phone</label>
-                                <input type="text" name="phone" required="">
                             </div>
-                            <div class="form-group">
-                                <label>Address</label>
-                                <input type="text" name="address" required="">
+                            <div class="col-sm-6">
+                                <label>Description</label>
+                                <textarea class="form-control" rows="6" name="description" required="" placeholder="Description of this service"><?php echo $service->description; ?></textarea>
                             </div>
-                           
+                            <div class="col-sm-6">
                             <div class="form-group message-btn">
                                 <button type="submit" class="theme-btn-one">Submit</button>
                             </div>
-                             <div class="form-group">
-                                <div class="text-center"><a href="login.php">Already have an account? Log in</a></div>
+                            
+                            
                             </div>
+                            </div>
+                            
                         </form>
                         
                     </div>

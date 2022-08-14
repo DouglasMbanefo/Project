@@ -1,3 +1,32 @@
+<?php
+include "connect.php";
+include "functions.php";
+include 'service_providers.php';
+
+
+if(isset($_COOKIE["provider_id"])){
+$provider = new ServiceProviders($_COOKIE["provider_id"], $conn);
+$provider_hash = $_COOKIE["provider_hash"];
+    if($provider_hash != $provider->hash){
+        header("location:login.php");
+    }
+}else{
+	header("location:login.php");
+}
+
+if(isset($_POST["title"])){
+   
+    $service_provider = $_COOKIE["provider_id"];
+    $location = sanitizePost($_POST['location']);
+    $title = sanitizePost($_POST['title']);
+    $description = sanitizePost($_POST['description']);
+    $cost = sanitizePost($_POST['cost']);
+     
+   add_mechanical_service($service_provider, $location, $title, $description, $cost);
+    header("location: service_provider_account.php");
+    
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +34,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
-<title>Mechailer - Registration Confirm</title>
+<title>Mechailer - New Mechanical Service</title>
 
 <!-- Fav Icon -->
 <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
@@ -42,10 +71,11 @@
             <div class="auto-container">
                 <div class="content-box centred mr-0">
                     <div class="title">
-                        <h1>Registration Successful</h1>
+                        <h1>Post Mechanical Service</h1>
                     </div>
                     <ul class="bread-crumb clearfix">
-                       
+                        <li><a href="index.php">Home</a></li>
+                        <li>Post Mechanical Service</li>
                     </ul>
                 </div>
             </div>
@@ -56,13 +86,42 @@
         <!-- login-section -->
         <section class="login-section bg-color-2">
             <div class="auto-container">
-                <div class="inner-container">
-                    <div class="inner-box text-center">
-                        <h2>Registration Successful!</h2>
-                          <div class="btn-box">
-                              <a href="login.php" class="theme-btn-one">
-                                <i class="fa fa-user"></i>  Login</a></div>
-                         
+                <div class="inner-container" style="max-width:80%">
+                    <div class=" ">
+                        <h2>New Mechanical Service</h2>
+                        <br>
+                        <form  method="post" class="login-form">
+                            <div class="row">
+                            <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" class="form-control" name="title" required="" placeholder="Enter a title for this service">
+                            </div>
+                            
+                                <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" class="form-control" name="location" required="" placeholder="Enter a location">
+                            </div>
+                            <div class="form-group">
+                                <label>Cost</label>
+                                <input type="number" class="form-control" step=".01" name="cost" required="" placeholder="Cost of this service">
+                            </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Description</label>
+                                <textarea class="form-control" rows="6" name="description" required="" placeholder="Description of this service"></textarea>
+                            </div>
+                            <div class="col-sm-6">
+                            <div class="form-group message-btn">
+                                <button type="submit" class="theme-btn-one">Submit</button>
+                            </div>
+                            
+                            
+                            </div>
+                            </div>
+                            
+                        </form>
+                        
                     </div>
                 </div>
             </div>

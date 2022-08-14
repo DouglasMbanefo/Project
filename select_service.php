@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
-<title>Mechailer - Registration Confirm</title>
+<title>Mechailer - Select Service</title>
 
 <!-- Fav Icon -->
 <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
@@ -42,7 +42,7 @@
             <div class="auto-container">
                 <div class="content-box centred mr-0">
                     <div class="title">
-                        <h1>Registration Successful</h1>
+                        <h1>Post a Service</h1>
                     </div>
                     <ul class="bread-crumb clearfix">
                        
@@ -58,11 +58,13 @@
             <div class="auto-container">
                 <div class="inner-container">
                     <div class="inner-box text-center">
-                        <h2>Registration Successful!</h2>
+                        <h2>Select a Service</h2>
                           <div class="btn-box">
-                              <a href="login.php" class="theme-btn-one">
-                                <i class="fa fa-user"></i>  Login</a></div>
-                         
+                              <a href="new_mechanical_service.php" class="theme-btn-one">
+                                <i class="fa fa-car"></i>  Mechanical Service</a></div>
+                          <div class="btn-box">
+                              <a href="new_car_rental.php" class="theme-btn-one">
+                                 <i class="fa fa-car"></i>  Car Rental Service</a></div>
                     </div>
                 </div>
             </div>
@@ -71,7 +73,7 @@
 
 
         <!-- main-footer -->
-       <?php include 'footer.php'; ?>
+         <?php include 'footer.php'; ?>
         <!-- main-footer end -->
 
 

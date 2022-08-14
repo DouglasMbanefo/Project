@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
-<title>Mechailer - Registration Confirm</title>
+<title>Mechailer - Order Confirm</title>
 
 <!-- Fav Icon -->
 <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
@@ -42,7 +42,7 @@
             <div class="auto-container">
                 <div class="content-box centred mr-0">
                     <div class="title">
-                        <h1>Registration Successful</h1>
+                        <h1>Order Successful</h1>
                     </div>
                     <ul class="bread-crumb clearfix">
                        
@@ -58,10 +58,10 @@
             <div class="auto-container">
                 <div class="inner-container">
                     <div class="inner-box text-center">
-                        <h2>Registration Successful!</h2>
+                        <h2>Order placed Successfully!</h2>
                           <div class="btn-box">
-                              <a href="login.php" class="theme-btn-one">
-                                <i class="fa fa-user"></i>  Login</a></div>
+                              <a href="user_account.php" class="theme-btn-one">
+                                <i class="fa fa-user"></i>  Continue</a></div>
                          
                     </div>
                 </div>

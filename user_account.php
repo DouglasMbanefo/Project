@@ -6,7 +6,13 @@ include 'orders_mechanical.php';
 include 'orders_rental.php';
 include 'mechanical_services.php';
 include 'rental_services.php';
+include 'service_providers.php';
 
+
+if(isset($_GET["logout"])){
+    logout();
+    header("location: login.php");
+}
 
 if(isset($_COOKIE["user_id"])){
 $user = new User($_COOKIE["user_id"], $conn);
@@ -39,7 +45,7 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
-<title>Clasifico - HTML 5 Template Preview</title>
+<title>Mechailer - My Account</title>
 
 <!-- Fav Icon -->
 <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
@@ -127,15 +133,17 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
 <div id="myorders" class="tabcontent">
   
     <div class="table-responsive">
-  <table class="table table-stripped">
+  <table class="table table-striped">
     <thead>
         <tr>
         <th>S/N</th>
         <th>Order Id</th>
-        <th>Service Provider</th>
         <th>Service</th>
+        <th>Service Provider</th>
+        <th>Service Provider Phone</th>
         <th>Cost</th>
         <th>Date</th>
+        <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -150,10 +158,15 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
           <tr>
           <td><?php echo $sn; ?></td>
           <td><?php echo $mech->order_id; ?></td>
-          <td><?php echo $provider->company_name; ?></td>
           <td><?php echo $service->title; ?></td>
+          <td><?php echo $provider->company_name; ?></td>
+          <td><?php echo $provider->phone; ?></td>
           <td><?php echo number_format($mech->cost,2); ?></td>
           <td><?php echo $mech->date; ?></td>
+              <td><form method="post" action="review_mechanical.php">
+                  <input type="hidden" name="service" value="<?php echo $mech->mechanical_service; ?>">
+                  <button type="submit" class="btn btn-sm btn-success">Review</button>
+                  </form></td>
           </tr>
           <?php
                   $sn +=1;
@@ -172,11 +185,16 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
 </div>
 
 <div id="profile" class="tabcontent">
-    <div class="lower-content">
+    <hr class="mt-0">
+    <div class="row">
+    <div class="lower-content col-sm-2">
                                        
- <img src="assets/images/<?php if($user->photo!=""){echo $user->photo;}else{ echo "news/admin-1.png"; } ?>" alt="" style="width: 80px; height:80px; border-radius:15px;">
+ <img src="assets/images/<?php if($user->photo!=""){echo $user->photo;}else{ echo "news/admin-1.png"; } ?>" alt="" style="width: 180px; height:180px; border-radius:15px;">
+        <br>
+          <a href="user_edit_profile.php" class="btn btn-warning btn-sm mt-2 mb-2"><i class="fa fa-edit"></i> Edit Profile</a>
+    <a href="?logout=1" class="btn btn-danger btn-sm mt-2 mb-2"><i class="fa fa-power-off"></i> Logout</a>
     </div>
-    <br>
+    <div class="col-sm-7 table-responsive">
   <table class="table table-striped">
       <tbody>
           <tr>
@@ -187,20 +205,22 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
           <td>Address:</td><td> <?php echo $user->address; ?></td></tr>
       </tbody> 
     </table>
-    <a href="" class="btn btn-danger"><i class="fa fa-edit"></i> Edit Profile</a>
-    <a href="" class="btn btn-warning"><i class="fa fa-power-off"></i> Logout</a>
+  
+</div>
+</div>
 </div>
                     
 <div id="car_rentals" class="tabcontent">
   
     <div class="table-responsive">
-  <table class="table table-stripped">
+  <table class="table table-striped">
     <thead>
         <tr>
         <th>S/N</th>
         <th>Order Id</th>
         <th>Service Provider</th>
-        <th>Service</th>
+        <th>Service Provider Phone</th>
+        <th>Car name</th>
         <th>Pick Up Location</th>
         <th>Pick Up Date</th>
         <th>Drop Off Location</th>
@@ -213,6 +233,7 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
         <th>Driver Address</th>
         <th>Cost</th>
         <th>Date</th>
+        <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -228,6 +249,7 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
           <td><?php echo $sn; ?></td>
           <td><?php echo $rental->order_id; ?></td>
           <td><?php echo $provider->company_name; ?></td>
+          <td><?php echo $provider->phone; ?></td>
           <td><?php echo $service->car_name; ?></td>
           <td><?php echo $rental->pick_up_location; ?></td>
           <td><?php echo $rental->pick_up_date	; ?></td>
@@ -239,8 +261,12 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
           <td><?php echo $rental->driver_last_name; ?></td>
           <td><?php echo $rental->driver_phone; ?></td>
           <td><?php echo $rental->driver_address; ?></td>
-          <td><?php echo number_format($mech->cost,2); ?></td>
+          <td><?php echo number_format($rental->cost,2); ?></td>
           <td><?php echo $rental->date; ?></td>
+              <td><form method="post" action="review_rental.php">
+                  <input type="hidden" name="service" value="<?php echo $rental->rental_service; ?>">
+                  <button type="submit" class="btn btn-sm btn-success">Review</button>
+                  </form></td>
           </tr>
           <?php
                   $sn +=1;
@@ -265,107 +291,7 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
 
 
         <!-- main-footer -->
-        <footer class="main-footer">
-            <div class="footer-top" style="background-image: url(assets/images/background/footer-1.jpg);">
-                <div class="auto-container">
-                    <div class="widget-section">
-                        <div class="row clearfix">
-                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
-                                <div class="footer-widget logo-widget">
-                                    <figure class="footer-logo"><a href="index.html"><img src="assets/images/footer-logo.png" alt=""></a></figure>
-                                    <div class="text">
-                                        <p>Lorem ipsum dolor amet consetetur adi pisicing elit sed eiusm tempor in cididunt ut labore dolore magna aliqua enim ad minim venitam</p>
-                                    </div>
-                                    <ul class="social-links clearfix">
-                                        <li><a href="index.html"><i class="fab fa-facebook-f"></i></a></li>
-                                        <li><a href="index.html"><i class="fab fa-twitter"></i></a></li>
-                                        <li><a href="index.html"><i class="fab fa-instagram"></i></a></li>
-                                        <li><a href="index.html"><i class="fab fa-google-plus-g"></i></a></li>
-                                        <li><a href="index.html"><i class="fab fa-linkedin-in"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
-                                <div class="footer-widget links-widget ml-70">
-                                    <div class="widget-title">
-                                        <h3>Services</h3>
-                                    </div>
-                                    <div class="widget-content">
-                                        <ul class="links-list clearfix">
-                                            <li><a href="index.html">About Us</a></li>
-                                            <li><a href="index.html">Listing</a></li>
-                                            <li><a href="index.html">How It Works</a></li>
-                                            <li><a href="index.html">Our Services</a></li>
-                                            <li><a href="index.html">Our Blog</a></li>
-                                            <li><a href="index.html">Contact Us</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
-                                <div class="footer-widget post-widget">
-                                    <div class="widget-title">
-                                        <h3>Top News</h3>
-                                    </div>
-                                    <div class="post-inner">
-                                        <div class="post">
-                                            <figure class="post-thumb">
-                                                <img src="assets/images/resource/footer-post-1.jpg" alt="">
-                                                <a href="blog-details.html"><i class="fas fa-link"></i></a>
-                                            </figure>
-                                            <h5><a href="blog-details.html">The Added Value Social Worker</a></h5>
-                                            <p>Mar 25, 2020</p>
-                                        </div>
-                                        <div class="post">
-                                            <figure class="post-thumb">
-                                                <img src="assets/images/resource/footer-post-2.jpg" alt="">
-                                                <a href="blog-details.html"><i class="fas fa-link"></i></a>
-                                            </figure>
-                                            <h5><a href="blog-details.html">Ways to Increase Trust</a></h5>
-                                            <p>Mar 24, 2020</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 footer-column">
-                                <div class="footer-widget contact-widget">
-                                    <div class="widget-title">
-                                        <h3>Contacts</h3>
-                                    </div>
-                                    <div class="widget-content">
-                                        <ul class="info-list clearfix">
-                                            <li>
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                Flat 20, Reynolds Neck, North Helenaville, FV77 8WS
-                                            </li>
-                                            <li>
-                                                <i class="fas fa-microphone"></i>
-                                                <a href="tel:23055873407">+2(305) 587-3407</a>
-                                            </li>
-                                            <li>
-                                                <i class="fas fa-envelope"></i>
-                                                <a href="mailto:info@example.com">info@example.com</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <div class="auto-container">
-                    <div class="footer-inner clearfix">
-                        <div class="copyright pull-left"><p><a href="index.html">Clasifico</a> &copy; 2020 All Right Reserved</p></div>
-                        <ul class="footer-nav pull-right clearfix">
-                            <li><a href="index.html">Terms of Service</a></li>
-                            <li><a href="index.html">Privacy Policy</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </footer>
+         <?php include 'footer.php'; ?>
         <!-- main-footer end -->
 
 
