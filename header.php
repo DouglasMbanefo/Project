@@ -21,7 +21,7 @@
                                     <ul class="navigation clearfix">
                                         <li ><a href="index.php">Home</a></li> 
                                         <li ><a href="">About</a></li> 
-                                        <li ><a href="<?php if(isset($_COOKIE["provider_id"])){echo 'service_provider_account.php';}else{ echo 'user_account.php'; } ?>">My Account</a></li> 
+                                        <li ><a href="<?php if(isset($_COOKIE["provider_id"])){echo 'service_provider_account.php';}else{ echo 'user_account.php'; } ?>"><?php if(isset($_COOKIE["provider_id"]) || isset($_COOKIE["user_id"])){echo "My Account";}else{echo "Login/Register"; } ?></a></li> 
                                         
                                     </ul>
                                 </div>

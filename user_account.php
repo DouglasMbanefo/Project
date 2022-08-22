@@ -117,6 +117,23 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
   padding: 6px 12px;
  
 }
+.tabcontent2 {
+  display: none;
+  padding: 6px 12px;
+ 
+}
+        .tablinks2{
+            border: 1px solid #eee;
+            border-radius: 20px;
+            padding: 10px;
+        }
+        
+        .tab2 button.active {
+  background-color: #17a2b8;
+    color: #fff;
+   
+}
+
 </style>
         <!-- login-section -->
         <section class="category-details bg-color-2" style="padding-top:20px;">
@@ -124,13 +141,18 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
                 <div class="inner-container">
                     <div class="col-sm-12"><h3>Hi, <?php echo $user->first_name; ?></h3></div><br>
                  <div class="tab">
-  <button class="tablinks active" onclick="openCity(event, 'myorders')" id="myorders_btn">My Orders</button>
-  <button class="tablinks" onclick="openCity(event, 'profile')">Profile</button>
-  <button class="tablinks" onclick="openCity(event, 'car_rentals')">Car Rentals</button>
+  <button class="tablinks active" onclick="openCity(event, 'myorders'); $('#mechanical_orders').click();" id="myorders_btn">My Orders</button>
+  <button class="tablinks" onclick="openCity(event, 'profile')" id="myprofile">Profile</button>
 
 </div>
 
 <div id="myorders" class="tabcontent">
+     <hr class="mt-0">
+<div class="tab2">
+    <button class="tablinks2 mb-1" onclick="openCity2(event, 'mechanicalorders')" id="mechanical_orders">Mechanical Orders</button>
+  <button class="tablinks2" onclick="openCity2(event, 'rental_orders')">Car Rental Orders</button>
+    </div>
+    <div id="mechanicalorders" class="tabcontent2">
   
     <div class="table-responsive">
   <table class="table table-striped">
@@ -182,6 +204,67 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
       </tbody>
     </table>
     </div>
+    </div>
+             
+<div id="rental_orders" class="tabcontent2">
+  
+    <div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+        <tr>
+        <th>S/N</th>
+        <th>Order Id</th>
+        <th>Service Provider</th>
+        <th>Service Provider Phone</th>
+        <th>Car name</th>
+        <th>Cost</th>
+        <th>Date</th>
+        <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+          <?php
+          if(!empty($order_rental)){
+              $sn=1;
+              for($i=0; $i<count($order_rental); $i++){
+                  $rental = new Orders_rental($order_rental[$i], $conn);
+                  $provider = new ServiceProviders($rental->service_provider, $conn);
+                  $service = new RentalServices($rental->rental_service, $conn);
+          ?>
+          <tr>
+          <td><?php echo $sn; ?></td>
+          <td><?php echo $rental->order_id; ?></td>
+          <td><?php echo $provider->company_name; ?></td>
+          <td><?php echo $provider->phone; ?></td>
+          <td><?php echo $service->car_name; ?></td>
+          <td><?php echo number_format($rental->cost,2); ?></td>
+          <td><?php echo $rental->date; ?></td>
+              <td><form method="post" action="rental_order_details.php">
+                  <input type="hidden" name="order_id" value="<?php echo $rental->order_id; ?>">
+                  <button type="submit" class="btn btn-sm btn-info mb-2">Order Details</button>
+                  </form>
+                  <form method="post" action="review_rental.php">
+                  <input type="hidden" name="service" value="<?php echo $rental->rental_service; ?>">
+                  <button type="submit" class="btn btn-sm btn-success">Review</button>
+                  </form></td>
+          </tr>
+          <?php
+                  $sn +=1;
+              }
+          }else{
+              ?>
+          <tr>
+          <td colspan="12">No Order</td>
+          </tr>
+          <?php
+          }
+              ?>
+      </tbody>
+    </table>
+    </div>
+</div>
+
+       
 </div>
 
 <div id="profile" class="tabcontent">
@@ -209,82 +292,7 @@ $query1 = "SELECT * FROM rental_orders WHERE user=".$_COOKIE["user_id"];
 </div>
 </div>
 </div>
-                    
-<div id="car_rentals" class="tabcontent">
-  
-    <div class="table-responsive">
-  <table class="table table-striped">
-    <thead>
-        <tr>
-        <th>S/N</th>
-        <th>Order Id</th>
-        <th>Service Provider</th>
-        <th>Service Provider Phone</th>
-        <th>Car name</th>
-        <th>Pick Up Location</th>
-        <th>Pick Up Date</th>
-        <th>Drop Off Location</th>
-        <th>Drop Off Date</th>
-        <th>Driver Email</th>
-        <th>Driver Title</th>
-        <th>Driver First Name</th>
-        <th>Driver Last Name</th>
-        <th>Driver Phone</th>
-        <th>Driver Address</th>
-        <th>Cost</th>
-        <th>Date</th>
-        <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-          <?php
-          if(!empty($order_rental)){
-              $sn=1;
-              for($i=0; $i<count($order_rental); $i++){
-                  $rental = new Orders_rental($order_rental[$i], $conn);
-                  $provider = new ServiceProviders($rental->service_provider, $conn);
-                  $service = new RentalServices($rental->rental_service, $conn);
-          ?>
-          <tr>
-          <td><?php echo $sn; ?></td>
-          <td><?php echo $rental->order_id; ?></td>
-          <td><?php echo $provider->company_name; ?></td>
-          <td><?php echo $provider->phone; ?></td>
-          <td><?php echo $service->car_name; ?></td>
-          <td><?php echo $rental->pick_up_location; ?></td>
-          <td><?php echo $rental->pick_up_date	; ?></td>
-          <td><?php echo $rental->drop_off_location; ?></td>
-          <td><?php echo $rental->drop_off_date; ?></td>
-          <td><?php echo $rental->driver_email; ?></td>
-          <td><?php echo $rental->driver_title; ?></td>
-          <td><?php echo $rental->driver_first_name; ?></td>
-          <td><?php echo $rental->driver_last_name; ?></td>
-          <td><?php echo $rental->driver_phone; ?></td>
-          <td><?php echo $rental->driver_address; ?></td>
-          <td><?php echo number_format($rental->cost,2); ?></td>
-          <td><?php echo $rental->date; ?></td>
-              <td><form method="post" action="review_rental.php">
-                  <input type="hidden" name="service" value="<?php echo $rental->rental_service; ?>">
-                  <button type="submit" class="btn btn-sm btn-success">Review</button>
-                  </form></td>
-          </tr>
-          <?php
-                  $sn +=1;
-              }
-          }else{
-              ?>
-          <tr>
-          <td colspan="12">No Order</td>
-          </tr>
-          <?php
-          }
-              ?>
-      </tbody>
-    </table>
-    </div>
-</div>
-
-                </div>
+                    </div>
             </div>
         </section>
         <!-- login-section end -->
@@ -336,7 +344,24 @@ function openCity(evt, cityName) {
 }
     
     
-    $("#myorders_btn").click();
+function openCity2(evt, cityName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent2");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks2");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+    
+    
+    $("#myprofile").click();
+    
+    
     
 </script>
 </body><!-- End of .page_wrapper -->

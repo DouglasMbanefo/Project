@@ -66,9 +66,11 @@ $query3 = "SELECT * FROM rental_services WHERE available=1";
                         <div class="content-box">
                             <h1>Rent Cars & Find Mechanics near you</h1>
                             <p></p>
+                            <a  class="theme-btn-one" href="#howitwork">Get Started</a>
+                            <a  class="theme-btn-one bg-info" href="search_results.php">Search for a service</a>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12 inner-column">
+              <!--      <div class="col-lg-4 col-md-6 col-sm-12 inner-column">
                         <div class="inner-box">
                             <div class="pattern-layer" style="background-image: url(assets/images/shape/shape-12.png);"></div>
                             <h3>Find a Service</h3>
@@ -96,7 +98,7 @@ $query3 = "SELECT * FROM rental_services WHERE available=1";
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </section>
@@ -104,13 +106,58 @@ $query3 = "SELECT * FROM rental_services WHERE available=1";
 
 
         <!-- process-section -->
-        <section class="process-section centred sec-pad">
+        <section class="process-section centred sec-pad" id="howitwork">
             <div class="pattern-layer" style="background-image: url(assets/images/shape/shape-17.png);"></div>
             <div class="auto-container">
                 <div class="sec-title centred">
                     <span>Process</span>
                     <h2>How it Works</h2>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing sed do eiusmod tempor <br />incididunt labore dolore magna aliqua enim.</p>
+                    <h5>For Regular Users</h5>
+                </div>
+                <div class="inner-content">
+                    <div class="row clearfix">
+                        <div class="col-lg-4 col-md-6 col-sm-12 process-block">
+                            <div class="process-block-one">
+                                <div class="inner-box">
+                                    <span class="count wow fadeInDown animated animated" data-wow-delay="00ms" data-wow-duration="1500ms">01</span>
+                                    <div class="text wow fadeInUp animated animated" data-wow-delay="00ms" data-wow-duration="1500ms">
+                                        <div class="icon-box text-info"><i class="fas fa-user"></i></div>
+                                        <h3>Create Account</h3>
+                                        <p>Register a new regular user account or login to an existing account.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12 process-block">
+                            <div class="process-block-one">
+                                <div class="inner-box">
+                                    <span class="count wow fadeInDown animated animated" data-wow-delay="300ms" data-wow-duration="1500ms">02</span>
+                                    <div class="text wow fadeInUp animated animated" data-wow-delay="300ms" data-wow-duration="1500ms">
+                                        <div class="icon-box text-info"><i class="fas fa-glass-martini"></i></div>
+                                        <h3>Find a Service</h3>
+                                        <p>Search for a service near your location</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12 process-block">
+                            <div class="process-block-one">
+                                <div class="inner-box">
+                                    <span class="count wow fadeInDown animated animated" data-wow-delay="600ms" data-wow-duration="1500ms">03</span>
+                                    <div class="text wow fadeInUp animated animated" data-wow-delay="600ms" data-wow-duration="1500ms">
+                                        <div class="icon-box text-info"><i class="fas fa-shopping-cart"></i></div>
+                                        <h3>Book a Service</h3>
+                                        <p>Book a service and contact a service providr near you.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>    <div class="auto-container mt-5">
+                <div class="sec-title centred mt-5">
+                    
+                    <h4>For Service Providers</h4>
                 </div>
                 <div class="inner-content">
                     <div class="row clearfix">
@@ -121,7 +168,7 @@ $query3 = "SELECT * FROM rental_services WHERE available=1";
                                     <div class="text wow fadeInUp animated animated" data-wow-delay="00ms" data-wow-duration="1500ms">
                                         <div class="icon-box"><i class="fas fa-user"></i></div>
                                         <h3>Create Account</h3>
-                                        <p>Lorem ipsum dolor sit amet constur adipisicing sed do eiusmod tempor incididunt labore.</p>
+                                        <p>Register a new service provider user account or login to an existing account.</p>
                                     </div>
                                 </div>
                             </div>
@@ -133,7 +180,7 @@ $query3 = "SELECT * FROM rental_services WHERE available=1";
                                     <div class="text wow fadeInUp animated animated" data-wow-delay="300ms" data-wow-duration="1500ms">
                                         <div class="icon-box"><i class="fas fa-glass-martini"></i></div>
                                         <h3>Post Your Service</h3>
-                                        <p>Lorem ipsum dolor sit amet constur adipisicing sed do eiusmod tempor incididunt labore.</p>
+                                        <p>Post your mechanical or car rental services</p>
                                     </div>
                                 </div>
                             </div>
@@ -144,8 +191,8 @@ $query3 = "SELECT * FROM rental_services WHERE available=1";
                                     <span class="count wow fadeInDown animated animated" data-wow-delay="600ms" data-wow-duration="1500ms">03</span>
                                     <div class="text wow fadeInUp animated animated" data-wow-delay="600ms" data-wow-duration="1500ms">
                                         <div class="icon-box"><i class="fas fa-dollar-sign"></i></div>
-                                        <h3>Sell Your Service</h3>
-                                        <p>Lorem ipsum dolor sit amet constur adipisicing sed do eiusmod tempor incididunt labore.</p>
+                                        <h3>Sell Your Services</h3>
+                                        <p>Take orders for your services and get paid.</p>
                                     </div>
                                 </div>
                             </div>
@@ -164,7 +211,7 @@ $query3 = "SELECT * FROM rental_services WHERE available=1";
                 <div class="sec-title centred">
                     <span>Features</span>
                     <h2>Featured Services</h2>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing sed do eiusmod tempor incididunt labore <br />dolore magna aliqua enim.</p>
+                    <p>A quick list of some featured service</p>
                 </div>
                 <div class="tabs-box">
                     <div class="tab-btn-box centred">
